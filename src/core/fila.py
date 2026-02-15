@@ -16,7 +16,6 @@ class GerenciadorFila:
 
     def proximo(self):
         if len(self.balconistas) > 1:
-            # Pega o primeiro, incrementa atendimento e move para o fim
             atendente = self.balconistas.pop(0)
             atendente["atendimentos"] += 1
             self.balconistas.append(atendente)

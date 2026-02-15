@@ -4,6 +4,7 @@ import os
 DATA_PATH = "data/balconistas.json"
 
 def garantir_diretorio():
+    # Cria a pasta data se ela não existir
     if not os.path.exists("data"):
         os.makedirs("data")
 
