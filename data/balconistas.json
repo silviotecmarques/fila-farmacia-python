@@ -1,0 +1,44 @@
+[
+    {
+        "id": 1,
+        "nome": "Silvio",
+        "funcao": "Farmacêutico(a)",
+        "foto": "12.png"
+    },
+    {
+        "id": 2,
+        "nome": "Taynan",
+        "funcao": "Balconista",
+        "foto": "15.png"
+    },
+    {
+        "id": 3,
+        "nome": "Ana",
+        "funcao": "Balconista",
+        "foto": "13.png"
+    },
+    {
+        "id": 4,
+        "nome": "Maria",
+        "funcao": "Balconista",
+        "foto": "5.png"
+    },
+    {
+        "id": 5,
+        "nome": "Dr. Silvio",
+        "funcao": "Farmacêutico(a)",
+        "foto": "24.png"
+    },
+    {
+        "id": 6,
+        "nome": "Tayna",
+        "funcao": "Balconista",
+        "foto": "1.png"
+    },
+    {
+        "id": 7,
+        "nome": "Dra. Ana Maria",
+        "funcao": "Farmacêutico(a)",
+        "foto": "18.png"
+    }
+]
