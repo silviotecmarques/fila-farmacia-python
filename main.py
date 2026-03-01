@@ -1,3 +1,4 @@
+# main.py
 import tkinter as tk
 from src.ui.app import FarmaciaApp
 

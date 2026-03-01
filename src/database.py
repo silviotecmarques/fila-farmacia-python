@@ -1,20 +1,23 @@
-import json
-import os
+# src/database.py
+import json, os
 
 class Database:
-    def __init__(self):
-        self.data_dir = "data"
-        if not os.path.exists(self.data_dir):
-            os.makedirs(self.data_dir)
+    def __init__(self, filename="database.json"):
+        self.path = filename
+        self.dados = self.carregar_dados()
 
-    def load(self, filename, default=[]):
-        path = os.path.join(self.data_dir, filename)
-        if not os.path.exists(path) or os.path.getsize(path) == 0:
-            return default
-        with open(path, 'r', encoding='utf-8') as f:
-            return json.load(f)
+    def carregar_dados(self):
+        if not os.path.exists(self.path):
+            return {"profissionais": [], "fila": []}
+        try:
+            with open(self.path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                if "profissionais" not in data: data["profissionais"] = []
+                if "fila" not in data: data["fila"] = []
+                return data
+        except:
+            return {"profissionais": [], "fila": []}
 
-    def save(self, filename, data):
-        path = os.path.join(self.data_dir, filename)
-        with open(path, 'w', encoding='utf-8') as f:
-            json.dump(data, f, indent=4, ensure_ascii=False)
+    def salvar_dados(self):
+        with open(self.path, 'w', encoding='utf-8') as f:
+            json.dump(self.dados, f, indent=4, ensure_ascii=False)

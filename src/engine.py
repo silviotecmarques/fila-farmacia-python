@@ -1,51 +1,47 @@
 # src/engine.py
 
 class FilaEngine:
-    def __init__(self, db):
-        self.db = db
-        self.cadastro = self.db.load("balconistas.json", default=[])
-        self.fila = []
-
-    def cadastrar_novo(self, nome, funcao, foto):
-        novo = {"id": len(self.cadastro) + 1, "nome": nome, "funcao": funcao, "foto": foto}
-        self.cadastro.append(novo)
-        self.db.save("balconistas.json", self.cadastro)
-        return novo
-
-    def alternar_na_fila(self, balconista_id):
-        """Adiciona se não estiver, remove se já estiver."""
-        # Verifica se já está na fila
-        for i, item in enumerate(self.fila):
-            if item['id'] == balconista_id:
-                self.fila.pop(i) # Remove
-                return "removido"
+    def __init__(self, database):
+        self.db = database
+        self.cadastro = self.db.dados["profissionais"]
         
-        # Se não encontrou, adiciona
-        for b in self.cadastro:
-            if b['id'] == balconista_id:
-                item = b.copy()
-                item.update({"atendimentos": 0, "tempo_total": 0, "tempo_atual": 0, "tempo_medio": "00:00"})
-                self.fila.append(item)
-                return "adicionado"
-        return None
+        # Reset da fila na inicialização para começar o dia limpo
+        self.db.dados["fila"] = []
+        self.fila = self.db.dados["fila"]
+        self.db.salvar_dados()
 
-    def atender(self):
-        if not self.fila: return
-        b = self.fila.pop(0)
-        b["atendimentos"] += 1
-        b["tempo_total"] += b["tempo_atual"]
-        b["tempo_atual"] = 0
-        if b["atendimentos"] > 0:
-            media = b["tempo_total"] // b["atendimentos"]
-            m, s = divmod(media, 60)
-            b["tempo_medio"] = f"{m:02d}:{s:02d}"
-        self.fila.append(b)
+    def cadastrar_novo(self, nome, foto):
+        # LÓGICA BLINDADA: Encontra o maior ID atual e soma 1
+        # Se não houver ninguém, o ID inicial será 1
+        max_id = 0
+        if self.cadastro:
+            max_id = max(p['id'] for p in self.cadastro)
+            
+        novo = {"id": max_id + 1, "nome": nome, "foto": foto}
+        self.cadastro.append(novo)
+        self.db.salvar_dados()
 
-    def pular(self):
-        if not self.fila: return
-        b = self.fila.pop(0)
-        b["tempo_atual"] = 0
-        self.fila.append(b)
+    def deletar_membro(self, b_id):
+        # Remove do cadastro e da fila de hoje
+        self.db.dados["profissionais"] = [p for p in self.db.dados["profissionais"] if p['id'] != b_id]
+        self.cadastro = self.db.dados["profissionais"]
+        self.db.dados["fila"] = [f for f in self.db.dados["fila"] if f['id'] != b_id]
+        self.fila = self.db.dados["fila"]
+        self.db.salvar_dados()
 
-    def tick(self):
-        if self.fila: self.fila[0]["tempo_atual"] += 1
+    def alternar_na_fila(self, b_id):
+        membro = next((p for p in self.cadastro if p['id'] == b_id), None)
+        if not membro: return
+        
+        pos = next((i for i, f in enumerate(self.fila) if f['id'] == b_id), None)
+        if pos is not None:
+            self.fila.pop(pos)
+        else:
+            self.fila.append(membro)
+        self.db.salvar_dados()
+
+    def proximo(self):
+        if len(self.fila) > 1:
+            p = self.fila.pop(0)
+            self.fila.append(p)
+            self.db.salvar_dados()
